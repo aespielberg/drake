@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.6) # for UseJava.cmake
+cmake_minimum_required(VERSION 2.8.10)
 
 # options
 option(BUILD_SHARED_LIBS "Build Drake with shared libraries." ON)
@@ -143,6 +143,12 @@ endif()
 
 enable_testing()
 include(CTest)
+set(GTEST_ROOT ${CMAKE_INSTALL_PREFIX})
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+if (GTEST_FOUND)
+  set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
+endif()
 
 set(drake_jar_javafiles util/Transform.java)
 set(drake_jar_requires)

@@ -47,7 +47,6 @@ RigidBodyTree::RigidBodyTree(
   a_grav << 0, 0, 0, 0, 0, -9.81;
 
   shared_ptr<RigidBody> b(new RigidBody());
-  make_shared<RigidBody>();
   b->linkname = "world";
   b->robotnum = 0;
   b->body_index = 0;
@@ -624,8 +623,8 @@ void RigidBodyTree::warnOnce(const string& id, const string& msg) {
 // MatrixXd ptsA, ptsB, normal, JA, JB;
 // vector<int> bodyA_idx, bodyB_idx;
 // bool return_val =
-// closestPointsAllBodies(bodyA_idx,bodyB_idx,ptsA,ptsB,normal,distance,
-// JA,JB,Jd);
+// closestPointsAllBodies(bodyA_idx, bodyB_idx, ptsA, ptsB, normal, distance,
+// JA, JB, Jd);
 // DEBUG
 // cout << "RigidBodyTree::closestDistanceAllBodies: distance.size() = " <<
 // distance.size() << endl;
@@ -919,7 +918,7 @@ void RigidBodyTree::getContactPositionsJac(
   }
 }
 
-/* [body_ind,Tframe] = parseBodyOrFrameID(body_or_frame_id) */
+/* [body_ind, Tframe] = parseBodyOrFrameID(body_or_frame_id) */
 template <typename Scalar>
 int RigidBodyTree::parseBodyOrFrameID(
     const int body_or_frame_id,
@@ -1570,7 +1569,7 @@ shared_ptr<RigidBody> RigidBodyTree::findLink(std::string linkname,
 
   // std::regex linkname_connector("[abc]");
   // cout<<"get linkname_connector"<<endl;
-  // linkname = std::regex_replace(linkname,linkname_connector,string("_"));
+  // linkname = std::regex_replace(linkname, linkname_connector, string("_"));
   int match = -1;
   for (int i = 0; i < bodies.size(); i++) {
     // Note: unlike the MATLAB implementation, I don't have to handle the fixed
@@ -1605,7 +1604,7 @@ shared_ptr<RigidBody> RigidBodyTree::findLink(std::string linkname,
 
   // std::regex linkname_connector("[abc]");
   // cout<<"get linkname_connector"<<endl;
-  // linkname = std::regex_replace(linkname,linkname_connector,string("_"));
+  // linkname = std::regex_replace(linkname, linkname_connector, string("_"));
   int match = -1;
   for (int i = 0; i < bodies.size(); i++) {
     // Note: unlike the MATLAB implementation, I don't have to handle the fixed
