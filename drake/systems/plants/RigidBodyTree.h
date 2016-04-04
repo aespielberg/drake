@@ -24,6 +24,12 @@
 
 typedef Eigen::Matrix<double, 3, BASIS_VECTOR_HALF_COUNT> Matrix3kd;
 
+struct parameter {
+	double value;
+	double ub;
+	double lb;
+};
+
 class DRAKERBM_EXPORT RigidBodyActuator {
  public:
   RigidBodyActuator(
@@ -117,8 +123,12 @@ class DRAKERBM_EXPORT RigidBodyTree {
   std::string getPositionName(int position_num) const;
   std::string getVelocityName(int velocity_num) const;
   std::string getStateName(int state_num) const;
+  parameter getParameter(std::string name) const;
+  void setParameter(std::string name, parameter param);
 
   void drawKinematicTree(std::string graphviz_dotfile_filename);
+  
+
 
   template <typename DerivedQ>
   KinematicsCache<typename DerivedQ::Scalar> doKinematics(
@@ -750,6 +760,9 @@ class DRAKERBM_EXPORT RigidBodyTree {
   void updateCompositeRigidBodyInertias(KinematicsCache<Scalar>& cache) const;
 
   bool initialized;
+
+  //todo: should such a dictionary only contain values referenced in that rigid body?  Maybe makes things clearer but more error-prone
+  std::unordered_map<std::string, parameter> * param_name_to_data = new std::unordered_map<std::string, parameter>(); //map is a pointer so if it changes one places it changes throughout the entire tree.
 
   // collision_model and collision_model_no_margins both maintain
   // a collection of the collision geometry in the RBM for use in

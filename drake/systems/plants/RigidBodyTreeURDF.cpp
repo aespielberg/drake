@@ -543,6 +543,36 @@ void parseFrame(RigidBodyTree* model, XMLElement* node) {
   model->addFrame(frame);
 }
 
+void parseParameter(RigidBodyTree* model, XMLElement* node) {
+	const char* attr = node->Attribute("drake_ignore");
+	if (attr && strcmp(attr, "true") == 0) return;
+
+	attr = node->Attribute("name");
+	if (!attr) throw runtime_error("ERROR: parameter tag is missing name attribute");
+	string name(attr);
+
+	attr = node->Attribute("value");
+	if (!attr)
+		throw runtime_error("ERROR: parameter " + name +
+			" is missing the value attribute");
+
+	double value;
+	parseScalarAttribute(node, "value", value);
+
+	double lb = -INFINITY; //default to no effective lower bound
+	parseScalarAttribute(node, "lb", lb);
+
+	double ub = INFINITY; //default to no effective upper bound
+	parseScalarAttribute(node, "ub", ub);
+
+	parameter param;
+	param.lb = lb;
+	param.ub = ub;
+	param.value = value;
+	model->setParameter(name, param);
+	
+}
+
 void parseRobot(RigidBodyTree* model, XMLElement* node,
                 const PackageMap& package_map, const string& root_dir,
                 const DrakeJoint::FloatingBaseType floating_base_type,
@@ -572,6 +602,10 @@ void parseRobot(RigidBodyTree* model, XMLElement* node,
   // END_DEBUG
 
   // todo: parse collision filter groups
+  // todo: parse parameters
+	   for (XMLElement* parameter_node = node->FirstChildElement("parameter"); parameter_node;
+	   parameter_node = parameter_node->NextSiblingElement("parameter"))
+		   parseParameter(model, parameter_node);
 
   // parse joints
   for (XMLElement* joint_node = node->FirstChildElement("joint"); joint_node;

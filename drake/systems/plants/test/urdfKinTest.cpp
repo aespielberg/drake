@@ -50,6 +50,8 @@ int main(int argc, char* argv[]) {
   auto phi = model->positionConstraints<double>(cache);
   cout << "phi = " << phi.transpose() << endl;
 
+  
   delete model;
+  while (true);
   return 0;
 }

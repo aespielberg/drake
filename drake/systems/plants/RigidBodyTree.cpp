@@ -231,6 +231,19 @@ string RigidBodyTree::getStateName(int state_num) const {
     return getVelocityName(state_num - num_positions);
 }
 
+parameter RigidBodyTree::getParameter(string name) const {
+	if (this->param_name_to_data->count(name)) {
+		throw std::runtime_error("could not find parameter " + name);
+	}
+	else {
+		return (*param_name_to_data)[name];
+	}
+}
+
+void RigidBodyTree::setParameter(string name, parameter param) {
+	(*param_name_to_data)[name] = param;
+}
+
 void RigidBodyTree::drawKinematicTree(std::string graphviz_dotfile_filename) {
   ofstream dotfile;
   dotfile.open(graphviz_dotfile_filename);
