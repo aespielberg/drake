@@ -12,16 +12,19 @@ using namespace Eigen;
 using namespace tinyxml2;
 
 // only writes values if they exist
+
 bool parseVectorAttribute(tinyxml2::XMLElement* node,
                           const char* attribute_name, Eigen::Vector3d& val) {
   const char* attr = node->Attribute(attribute_name);
   if (attr) {
     std::stringstream s(attr);
     s >> val(0) >> val(1) >> val(2);
+	std::cout << attr << std::endl;
     return true;
   }
   return false;
 }
+
 
 bool parseVectorAttribute(tinyxml2::XMLElement* node,
                           const char* attribute_name, Eigen::Vector4d& val) {
@@ -55,6 +58,10 @@ bool parseVectorValue(tinyxml2::XMLElement* node, const char* element_name,
   }
   return false;
 }
+
+
+//todo: autodiff versions
+
 
 bool parseStringValue(tinyxml2::XMLElement* node, const char* element_name,
                       std::string& val) {

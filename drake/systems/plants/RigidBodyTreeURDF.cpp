@@ -46,8 +46,10 @@ RigidBodyFrame::RigidBodyFrame(RigidBodyTree* tree, XMLElement* link_reference,
 
   Vector3d xyz = Vector3d::Zero(), rpy = Vector3d::Zero();
   if (pose) {
-    parseVectorAttribute(pose, "xyz", xyz);
-    parseVectorAttribute(pose, "rpy", rpy);
+    bool success = parseVectorAttribute(pose, "xyz_sym", xyz);
+	if (!success) parseVectorAttribute(pose, "xyz", xyz);
+    success = parseVectorAttribute(pose, "rpy_sym", rpy);
+	if (!success) parseVectorAttribute(pose, "rpy", rpy);
   }
   transform_to_body.matrix() << rpy2rotmat(rpy), xyz, 0, 0, 0, 1;
 }
@@ -60,7 +62,11 @@ void parseInertial(shared_ptr<RigidBody> body, XMLElement* node,
   if (origin) originAttributesToTransform(origin, T);
 
   XMLElement* mass = node->FirstChildElement("mass");
-  if (mass) parseScalarAttribute(mass, "value", body->mass);
+  bool success;
+  if (mass) success = parseScalarAttribute(mass, "value_sym", body->mass);
+  if (!success) {
+	  parseScalarAttribute(mass, "value", body->mass);
+  }
 
   body->com << T(0, 3), T(1, 3), T(2, 3);
 
@@ -70,15 +76,33 @@ void parseInertial(shared_ptr<RigidBody> body, XMLElement* node,
 
   XMLElement* inertia = node->FirstChildElement("inertia");
   if (inertia) {
-    parseScalarAttribute(inertia, "ixx", I(0, 0));
-    parseScalarAttribute(inertia, "ixy", I(0, 1));
+    success = parseScalarAttribute(inertia, "ixx_sym", I(0, 0));
+	if (!success) {
+		parseScalarAttribute(inertia, "ixx", I(0, 0));
+	}
+    success = parseScalarAttribute(inertia, "ixy_sym", I(0, 1));
+	if (!success) {
+		parseScalarAttribute(inertia, "ixy", I(0, 1));
+	}
     I(1, 0) = I(0, 1);
-    parseScalarAttribute(inertia, "ixz", I(0, 2));
+	success = parseScalarAttribute(inertia, "ixz_sym", I(0, 2));
+	if (!success) {
+		parseScalarAttribute(inertia, "ixz", I(0, 2));
+	}
     I(2, 0) = I(0, 2);
-    parseScalarAttribute(inertia, "iyy", I(1, 1));
-    parseScalarAttribute(inertia, "iyz", I(1, 2));
+	success = parseScalarAttribute(inertia, "iyy_sym", I(1, 1));
+	if (!success) {
+		parseScalarAttribute(inertia, "iyy", I(1, 1));
+	}
+	success = parseScalarAttribute(inertia, "iyz_sym", I(1, 2));
+	if (!success) {
+		parseScalarAttribute(inertia, "iyz", I(1, 2));
+	}
     I(2, 1) = I(1, 2);
-    parseScalarAttribute(inertia, "izz", I(2, 2));
+	success = parseScalarAttribute(inertia, "izz_sym", I(2, 2));
+	if (!success) {
+		parseScalarAttribute(inertia, "izz", I(2, 2));
+	}
   }
 
   body->I = transformSpatialInertia(T, I);
@@ -582,6 +606,17 @@ void parseRobot(RigidBodyTree* model, XMLElement* node,
 
   string robotname = node->Attribute("name");
 
+  for (XMLElement* parameter_node = node->FirstChildElement("parameter"); parameter_node;
+  parameter_node = parameter_node->NextSiblingElement("parameter"))
+	  parseParameter(model, parameter_node);
+
+  //TODO: for each following element, check if we can make the parameterized version.  
+  //If we can, then we in some way instantiate it as an autodiff, and keep an Id system going for what coord # it is.
+  //otherwise, we instantiate as a double.
+
+
+
+
   // parse material elements
   MaterialMap materials;
   for (XMLElement* link_node = node->FirstChildElement("material"); link_node;
@@ -602,10 +637,7 @@ void parseRobot(RigidBodyTree* model, XMLElement* node,
   // END_DEBUG
 
   // todo: parse collision filter groups
-  // todo: parse parameters
-	   for (XMLElement* parameter_node = node->FirstChildElement("parameter"); parameter_node;
-	   parameter_node = parameter_node->NextSiblingElement("parameter"))
-		   parseParameter(model, parameter_node);
+  
 
   // parse joints
   for (XMLElement* joint_node = node->FirstChildElement("joint"); joint_node;

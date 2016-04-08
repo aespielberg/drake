@@ -241,6 +241,12 @@ parameter RigidBodyTree::getParameter(string name) const {
 }
 
 void RigidBodyTree::setParameter(string name, parameter param) {
+	if (param_name_to_data->count(name)) {
+		param.idx = (*param_name_to_data)[name].idx; //exists, copy over index.
+	}
+	else {
+		param.idx = param_name_to_data->size() + 1; //new item, assign new, unique idx.
+	}
 	(*param_name_to_data)[name] = param;
 }
 

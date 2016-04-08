@@ -41,6 +41,7 @@ bool parseScalarAttribute(tinyxml2::XMLElement* node,
 }
 
 // only writes values if they exist
+
 DRAKEXMLUTIL_EXPORT bool parseVectorAttribute(tinyxml2::XMLElement* node,
                                               const char* attribute_name,
                                               Eigen::Vector3d& val);
@@ -53,9 +54,12 @@ DRAKEXMLUTIL_EXPORT bool parseVectorValue(tinyxml2::XMLElement* node,
 DRAKEXMLUTIL_EXPORT bool parseVectorValue(tinyxml2::XMLElement* node,
                                           const char* element_name,
                                           Eigen::Vector4d& val);
+
 DRAKEXMLUTIL_EXPORT bool parseStringValue(tinyxml2::XMLElement* node,
                                           const char* element_name,
                                           std::string& val);
+
+//todo: autodiff versions
 
 DRAKEXMLUTIL_EXPORT void originAttributesToTransform(tinyxml2::XMLElement* node,
                                                      Eigen::Isometry3d& T);

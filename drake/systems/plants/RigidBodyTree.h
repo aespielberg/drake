@@ -28,6 +28,7 @@ struct parameter {
 	double value;
 	double ub;
 	double lb;
+	int idx; //the index of the parameter.  Important for autodiff.
 };
 
 class DRAKERBM_EXPORT RigidBodyActuator {
@@ -125,6 +126,7 @@ class DRAKERBM_EXPORT RigidBodyTree {
   std::string getStateName(int state_num) const;
   parameter getParameter(std::string name) const;
   void setParameter(std::string name, parameter param);
+  std::unordered_map<std::string, parameter> * getParameters() { return this->param_name_to_data; }
 
   void drawKinematicTree(std::string graphviz_dotfile_filename);
   
